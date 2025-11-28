@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor User
+    participant Frontend as ⚛️ React Frontend
+    participant Backend as 🚀 Express Backend
+    participant Ollama as 🦙 Ollama LLM
+
+    User->>Frontend: Sends message ("Hello")
+    Frontend->>Frontend: Updates local state (Optimistic UI)
+    Frontend->>Backend: POST /chat { messages: [...] }
+    
+    Note over Backend: Validates request with Zod
+    
+    Backend->>Ollama: POST /api/chat
+    Note right of Ollama: Processes context & generates reply
+    Ollama-->>Backend: Returns generated response
+    
+    Backend-->>Frontend: Returns { reply: "..." }
+    Frontend->>User: Displays AI response

@@ -23,33 +23,28 @@ export async function askLLM(system: string, messages: Message[]): Promise<strin
 async function askOllama(system: string, messages: Message[]) {
   const model = process.env.OLLAMA_MODEL || "phi3";
 
-  // Build conversation prompt
-  let conversationPrompt = system + "\n\n";
+  // Construct messages array for Ollama /api/chat
+  const chatMessages = [
+    { role: "system", content: system },
+    ...messages.map(msg => ({ role: msg.role, content: msg.content }))
+  ];
 
-  for (const msg of messages) {
-    if (msg.role === "user") {
-      conversationPrompt += `User: ${msg.content}\n`;
-    } else {
-      conversationPrompt += `Assistant: ${msg.content}\n`;
-    }
-  }
-
-  conversationPrompt += "Assistant:";
+  const ollamaHost = process.env.OLLAMA_HOST || "http://localhost:11434";
 
   try {
-    const res = await fetch("http://localhost:11434/api/generate", {
+    const res = await fetch(`${ollamaHost}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model,
-        prompt: conversationPrompt,
+        messages: chatMessages,
         stream: false
       })
     });
 
     const data = await res.json();
 
-    return data?.response || "No response from Ollama";
+    return data?.message?.content || "No response from Ollama";
   } catch (err) {
     console.error("Error communicating with Ollama:", err);
     return "Error: Could not connect to Ollama. Is it running?";

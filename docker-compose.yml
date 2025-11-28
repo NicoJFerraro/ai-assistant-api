@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./server
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - LLM_PROVIDER=ollama
+      - OLLAMA_MODEL=phi3
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build: ./client
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend

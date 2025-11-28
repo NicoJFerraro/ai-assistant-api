@@ -1,4 +1,4 @@
-# AI Home Assistant
+# 🤖 AI Home Assistant
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -6,213 +6,113 @@
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 
-A full-stack AI-powered home assistant application built with Node.js, Express, React, and Vite. This project demonstrates conversation memory management and integration with local LLM providers.
+![AI Assistant UI](assets/chat_ui.png)
 
-## Features
+👋 **Hi there! Welcome to my AI Home Assistant project.**
 
-- 🤖 **Conversational AI**: Chat with an AI assistant that remembers context
-- 🏠 **Home Assistant Focus**: Helps with household tasks, cooking, cleaning, and provides companionship
-- 💬 **Context Memory**: Maintains conversation history for coherent multi-turn dialogues
-- 🔌 **Extensible LLM Support**: Currently supports Ollama with placeholders for OpenAI and Gemini
-- ⚡ **Modern Stack**: TypeScript, React, Express, and Vite for fast development
+I built this application to explore how we can create **context-aware conversational interfaces** using modern web technologies and local Large Language Models (LLMs). It's a friendly assistant designed to help with household tasks, offer companionship, and demonstrate the power of maintaining conversation history.
 
-## Tech Stack
+## 🚀 How It Works
 
-### Backend
-- **Node.js** + **Express**: REST API server
-- **TypeScript**: Type-safe development
-- **Zod**: Runtime schema validation
-- **Ollama**: Local LLM provider
+Curious about the magic behind the scenes? Here's a peek at the data flow:
 
-### Frontend
-- **React**: UI framework
-- **TypeScript**: Type-safe components
-- **Vite**: Fast build tool and dev server
-- **CSS**: Custom styling with dark theme
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend as ⚛️ React Frontend
+    participant Backend as 🚀 Express Backend
+    participant Ollama as 🦙 Ollama LLM
 
-## Project Structure
+    User->>Frontend: Sends message ("Hello")
+    Frontend->>Frontend: Updates local state (Optimistic UI)
+    Frontend->>Backend: POST /chat { messages: [...] }
+    
+    Note over Backend: Validates request with Zod
+    
+    Backend->>Ollama: POST /api/chat
+    Note right of Ollama: Processes context & generates reply
+    Ollama-->>Backend: Returns generated response
+    
+    Backend-->>Frontend: Returns { reply: "..." }
+    Frontend->>User: Displays AI response
+```
+
+1.  **You speak**: You type a message in the React frontend.
+2.  **We remember**: The frontend sends your message *plus* the conversation history to the backend.
+3.  **We process**: The Node.js backend validates everything and talks to **Ollama** (running locally).
+4.  **AI responds**: The LLM generates a thoughtful response based on the full context.
+
+## 🛠️ Tech Stack
+
+I chose this stack to balance **performance, type safety, and developer experience**:
+
+*   **Backend**: Node.js + Express (Robust and scalable)
+*   **Frontend**: React + Vite (Fast and interactive)
+*   **Language**: TypeScript (Catching bugs before they happen!)
+*   **Validation**: Zod (Ensuring data integrity)
+*   **AI Engine**: Ollama (Running powerful models like Phi-3 locally)
+
+## 📂 Project Structure
+
+I've organized the project to keep things clean and modular:
 
 ```
 ai-assistant-api/
-├── src/                    # Backend source code
-│   ├── controllers/        # Request handlers
-│   ├── routes/            # API routes
-│   ├── schemas/           # Zod validation schemas
-│   ├── services/          # Business logic
-│   ├── utils/             # LLM integration utilities
-│   ├── app.ts             # Express app configuration
-│   └── server.ts          # Server entry point
-├── client/                # Frontend React app
+├── server/                 # 🧠 The Brain (Backend)
 │   ├── src/
-│   │   ├── App.tsx        # Main app component
-│   │   ├── types.ts       # TypeScript types
-│   │   └── index.css      # Styles
-│   └── vite.config.ts     # Vite configuration
-└── package.json
+│   │   ├── controllers/    # Handling requests
+│   │   ├── services/       # Business logic
+│   │   ├── utils/          # LLM magic
+│   │   └── ...
+│   └── Dockerfile
+├── client/                 # 💅 The Face (Frontend)
+│   ├── src/
+│   │   ├── App.tsx         # Main UI logic
+│   │   └── ...
+│   └── Dockerfile
+└── docker-compose.yml      # 🐳 Orchestration
 ```
 
-## Prerequisites
+## 🏃‍♂️ Getting Started
 
-- **Node.js** (v18 or higher)
-- **npm** (v9 or higher)
-- **Ollama** (for local LLM) - [Install Ollama](https://ollama.ai)
+Want to run this yourself? Let's get you set up!
 
-## Installation
+### Prerequisites
+*   **Docker** (Recommended for easiest setup)
+*   *Or* Node.js v18+ and Ollama installed locally.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/ai-assistant-api.git
-   cd ai-assistant-api
-   ```
+### Option 1: The "I want it now" way (Docker) 🐳
 
-2. **Install backend dependencies**
-   ```bash
-   npm install
-   ```
+1.  **Clone the repo**:
+    ```bash
+    git clone https://github.com/yourusername/ai-assistant-api.git
+    cd ai-assistant-api
+    ```
 
-3. **Install frontend dependencies**
-   ```bash
-   cd client
-   npm install
-   cd ..
-   ```
+2.  **Launch everything**:
+    ```bash
+    docker compose up --build
+    ```
 
-4. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   PORT=3000
-   LLM_PROVIDER=ollama
-   OLLAMA_MODEL=phi3
-   ```
+3.  **Explore**: Open `http://localhost:5173` and say hello!
 
-5. **Start Ollama** (if using local LLM)
-   ```bash
-   ollama serve
-   ```
-   
-   Pull a model (if not already done):
-   ```bash
-   ollama pull phi3
-   ```
+### Option 2: The "Hacker" way (Manual) 💻
 
-## Running the Application
+If you prefer running things manually:
 
-### Development Mode
+1.  **Start Ollama**: `ollama serve` (and pull a model like `ollama pull phi3`).
+2.  **Server**: `cd server && npm install && npm run dev`
+3.  **Client**: `cd client && npm install && npm run dev`
 
-1. **Start the backend server**
-   ```bash
-   npm run dev
-   ```
-   The API will be available at `http://localhost:3000`
+## 🧪 Testing
 
-2. **Start the frontend dev server** (in a new terminal)
-   ```bash
-   cd client
-   npm run dev
-   ```
-   The app will be available at `http://localhost:5173`
+I believe in robust code! Run the test suite to verify the backend logic:
 
-### Production Build
-
-1. **Build the backend**
-   ```bash
-   npm run build
-   ```
-
-2. **Build the frontend**
-   ```bash
-   cd client
-   npm run build
-   ```
-
-3. **Start the production server**
-   ```bash
-   npm start
-   ```
-
-## API Endpoints
-
-### `POST /chat`
-
-Send a message to the AI assistant.
-
-**Request Body:**
-```json
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": "How do I remove wine stains?"
-    }
-  ]
-}
+```bash
+cd server
+npm test
 ```
 
-**Response:**
-```json
-{
-  "reply": "To remove wine stains, blot the area immediately..."
-}
-```
+---
 
-### `GET /health`
-
-Health check endpoint.
-
-**Response:**
-```json
-{
-  "ok": true
-}
-```
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Backend server port | `3000` |
-| `LLM_PROVIDER` | LLM provider to use (`ollama`, `openai`, `gemini`) | `ollama` |
-| `OLLAMA_MODEL` | Ollama model name | `phi3` |
-
-### Vite Proxy
-
-The frontend is configured to proxy `/chat` requests to the backend during development. See `client/vite.config.ts`.
-
-## How It Works
-
-1. **User Input**: User types a message in the chat interface
-2. **Frontend**: Sends the full conversation history to `/chat` endpoint
-3. **Backend**: Validates the request and passes messages to the chat service
-4. **LLM Integration**: Builds a conversation prompt and sends it to Ollama
-5. **Response**: AI response is returned and displayed in the chat
-
-## Development
-
-### Key Concepts
-
-- **Context Memory**: The frontend maintains conversation state and sends the full history with each request
-- **Conversation Prompting**: The backend builds a formatted prompt with system instructions and conversation history
-- **Type Safety**: Zod schemas ensure runtime validation matches TypeScript types
-
-### Adding New LLM Providers
-
-To add support for a new LLM provider:
-
-1. Add a new case in `src/utils/llm.ts`
-2. Implement the provider-specific function
-3. Update the `.env` file with the provider name
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-ISC
-
-## Author
-
-Nicolas - Junior AI Engineer Portfolio Project
+*Built with ❤️ and ☕ by Nicolás.*
